@@ -4,6 +4,8 @@ const _ = require('lodash')
 
 const socket = io('http://localhost:4007')
 
+const Timer = require('../components/Timer')
+
 const Admin = React.createClass({
   getInitialState() {
     return {
@@ -24,6 +26,45 @@ const Admin = React.createClass({
         event: res
       })
     })
+
+    socket.on('EVENT_UPDATE', updatedEvent => {
+      console.warn('\nEVENT_UPDATE', updatedEvent)
+
+      this.setState({
+        event: updatedEvent
+      })
+    })
+  },
+
+  componentWillUnmount() {
+    socket.removeAllListeners('EVENT_UPDATE')
+  },
+
+  onStart() {
+    this._sendUpdate({
+      status: {
+        running: true
+      }
+    })
+  },
+
+  onPause() {
+    this._sendUpdate({
+      status: {
+        running: false
+      }
+    })
+  },
+
+  _sendUpdate(data) {
+    const eventName = _.get(this.props, ['params', 'id'])
+    const token = _.get(this.props, ['location', 'query', 'token'])
+
+    socket.emit('UPDATE_EVENT', {
+      eventName: eventName,
+      token: token,
+      data: data
+    })
   },
 
   render() {
@@ -36,7 +77,9 @@ const Admin = React.createClass({
     }
 
     const activeTeamIdx = event.status.active
-    const activeTeam = event.teams[activeTeamIdx]
+    const activeTeam = event.teams[activeTeamIdx] || {}
+
+    const publicUrl = document.URL.replace('admin', 'event').split('?token')[0]
 
     return (
       <div className='swtimer padding-1'>
@@ -45,21 +88,20 @@ const Admin = React.createClass({
           <div className='capital-text'>Pitch time</div>
         </div>
 
-        <div className='padding-1'>
-          <b>Active team</b>
-          <h3>{activeTeam.name}</h3>
-        </div>
-
-        <div className='padding-1'>
-          <a className='button -primary'>Start</a>
-          {' '}
-          <a className='button'>Pause</a>
-          {' '}
-          <a className='button'>Send to the bottom</a>
-        </div>
-
         <div className='flex'>
           <div className='padding-1 flex-1 team-list'>
+            <div className='padding-1'>
+              <Timer value={event} />
+            </div>
+
+            <div className='padding-1'>
+              {event.status.running ? (
+                <a className='button -primary' onClick={this.onPause}>Pause</a>
+              ) : (
+                <a className='button -primary' onClick={this.onStart}>Start</a>
+              )}
+            </div>
+
             {_.map(event.teams, (team, teamIdx) => {
               return <div key={teamIdx} className={`team-element ${teamIdx === activeTeamIdx ? '-active' : ''}`}>
                 {team.name}
@@ -69,9 +111,9 @@ const Admin = React.createClass({
 
           <div className='sidebar padding-1'>
             <div className='capital-text'>
-              Share the <b>PUBLIC</b> Url
+              Share the <b>PUBLIC</b> Url, <a href={publicUrl} target='_blank'>[open]</a>
             </div>
-            <input type='text' value={document.URL.replace('admin', 'event').split('?token')[0]} disabled />
+            <input type='text' value={publicUrl} disabled />
 
             <div className='capital-text'>
               Share the <b>ADMIN</b> Url (Be careful!)

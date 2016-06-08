@@ -6,15 +6,10 @@ var io = require('socket.io-client')
 var socket = io('http://localhost:4007')
 
 const Home = React.createClass({
-  contextTypes: {
-    contextState: React.PropTypes.object,
-    updateContextState: React.PropTypes.func
-  },
-
   getInitialState() {
     return {
-      pitchTime: 5,
-      qaTime: 3,
+      pitchTime: 360,
+      qaTime: 180,
       eventName: '3',
       teams: [{
         name: 'EBC'
@@ -24,16 +19,12 @@ const Home = React.createClass({
         name: 'H/F'
       }, {
         name: 'SW Registro'
+      }, {
+        name: 'Piggo'
+      }, {
+        name: 'GBM'
       }]
     }
-  },
-
-  componentWillMount() {
-    const {updateContextState} = this.context
-
-    updateContextState({
-      test: 'Context updated!'
-    })
   },
 
   onChangeTeams(newTeams) {
@@ -53,7 +44,6 @@ const Home = React.createClass({
 
   render() {
     const {pitchTime, qaTime, teams, eventName} = this.state
-    const {contextState} = this.context
 
     return (
       <div className='swtimer padding-1'>
@@ -95,7 +85,11 @@ const Home = React.createClass({
           <input
             type='text'
             value={eventName}
-            className='no-margin flex-1'/>
+            className='no-margin flex-1' onChange={(evt) => {
+              this.setState({
+                eventName: evt.target.value
+              })
+            }}/>
 
           <a className='button -primary margin-left-1' onClick={this.onCreate}>
             Create!

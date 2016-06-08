@@ -35,8 +35,10 @@
     "webpack-hot-middleware": "^2.9.1"
   },
   "dependencies": {
+    "chart.js": "^1.1.1",
     "lodash": "^4.13.1",
     "react": "^15.0.2",
+    "react-chartjs": "^0.7.3",
     "react-dom": "^15.0.2",
     "react-router": "^2.4.1",
     "socket.io-client": "^1.4.6"
