@@ -14,12 +14,12 @@ io.on('connection', function(socket){
   socket.on('REQUEST_EVENT', function(eventName, callback) {
     console.log('\nREQUEST_EVENT', eventName, 'EVENT_ROOM_' + eventName)
 
-     socket.join('EVENT_ROOM_' + eventName)
+    socket.join('EVENT_ROOM_' + eventName)
 
     if (STORE[eventName]) {
       callback(null, STORE[eventName])
     } else {
-      console.log('ERR NO SUCH EVENT', {
+      console.log('\nERR NO SUCH EVENT', {
         req: {eventName},
         STORE
       })
@@ -28,7 +28,7 @@ io.on('connection', function(socket){
   })
 
   socket.on('POST_EVENT', function(eventData, callback) {
-    console.log('\POST REQUEST', eventData.eventName)
+    console.log('\nPOST_EVENT', eventData.eventName)
 
     var eventName = eventData.eventName
 
@@ -53,7 +53,7 @@ io.on('connection', function(socket){
   })
 
   socket.on('UPDATE_EVENT', function(eventData, callback) {
-    console.log('\UPDATE REQUEST', eventData.eventName, 'EVENT_ROOM_' + eventData.eventName)
+    console.log('\nUPDATE_EVENT', eventData.eventName, 'EVENT_ROOM_' + eventData.eventName)
 
     STORE[eventData.eventName]
 
@@ -68,7 +68,6 @@ io.on('connection', function(socket){
 });
 
 function dispatchEventUpdate(eventName) {
-  console.warn('DISPATCH', eventName)
   io.to('EVENT_ROOM_' + eventName).emit('EVENT_UPDATE', STORE[eventName])
 }
 
