@@ -17,7 +17,7 @@ const Admin = React.createClass({
     const eventId = _.get(this.props, ['params', 'id'])
 
     socket.emit('REQUEST_EVENT', eventId, (err, res) => {
-      console.warn('\nREQUEST_EVENT', res)
+      console.warn('\nREQUEST_EVENT', {err, res})
       if (err) {
         this.props.history.push('/');
       }

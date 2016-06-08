@@ -36,8 +36,6 @@ const Home = React.createClass({
   onCreate() {
     console.warn('\nCREATING EVENT', this.state);
     socket.emit('POST_EVENT', this.state, (err, res) => {
-      console.warn({res})
-
       this.props.history.push(`/admin/${res.key}?token=${res.token}`);
     })
   },
