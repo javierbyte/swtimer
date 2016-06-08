@@ -2,7 +2,7 @@ const React = require('react')
 const io = require('socket.io-client')
 const _ = require('lodash')
 
-const socket = io('http://localhost:4007')
+const socket = io(`http://${document.location.hostname}:4007`)
 
 const Timer = require('../components/Timer')
 
@@ -44,6 +44,17 @@ const Admin = React.createClass({
     this._sendUpdate({
       status: {
         running: true
+      }
+    })
+  },
+
+  onRestart() {
+    const {event} = this.state
+
+    this._sendUpdate({
+      status: {
+        remainingTime: event.status.phase === 'PITCH' ? event.pitchTime * 1000 : event.qaTime * 1000,
+        running: false
       }
     })
   },
@@ -100,6 +111,8 @@ const Admin = React.createClass({
               ) : (
                 <a className='button -primary' onClick={this.onStart}>Start</a>
               )}
+              {' '}
+              <a className='button -primary' onClick={this.onRestart}>Restart this phase</a>
             </div>
 
             {_.map(event.teams, (team, teamIdx) => {

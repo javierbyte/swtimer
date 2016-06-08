@@ -69,8 +69,6 @@ function dispatchEventUpdate(eventName) {
 }
 
 setInterval(function() {
-  console.log('TICK')
-
   _.forEach(STORE, event => {
     var eventStatus = event.status
 

@@ -2,7 +2,7 @@ const React = require('react')
 const io = require('socket.io-client')
 const _ = require('lodash')
 
-const socket = io('http://localhost:4007')
+const socket = io(`http://${document.location.hostname}:4007`)
 
 const Timer = require('../components/Timer')
 
