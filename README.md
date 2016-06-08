@@ -12,8 +12,13 @@ Yey ~ better docs coming soon. Try it online! http://javierbyte.com:3000/
 * Generates a public client page, where everyone can see the current state of the presentations.
 ![](/docs-assets/client.png)
 
-* And all the clientes are up to date! (and it's responsive).
+* And all the clients are up to date! (and it's responsive).
 ![](/docs-assets/sync.png)
+
+## Tech Stack.
+* React
+* Nodejs
+* Socket.io
 
 # Roadmap.
 * Live chat.
@@ -28,9 +33,11 @@ npm start
 
 For the backend:
 ```
+cd backend
 npm i
 node server.js
 ````
-.
+
+Once they are both running, you can go to `http://localhost:3000`.
 
 Thanks ~
