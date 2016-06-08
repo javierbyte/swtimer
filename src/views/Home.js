@@ -37,7 +37,7 @@ const Home = React.createClass({
       if (err) {
         return console.error(err)
       }
-      window.scrollTo(0, 0);
+      window.scrollTo(0, 0)
       this.props.history.push(`/admin/${res.key}?token=${res.token}`)
     })
   },
