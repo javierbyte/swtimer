@@ -2,11 +2,14 @@
 
 @yellow: #F1C40F;
 @orange: #F39C12;
+@light-gray: #BDC3C7;
 @lightest-gray: #ECF0F1;
 @border-radius: 2px;
 
 @blue: #3498DB;
 @dark-blue: #2980B9;
+
+@gray: #95A5A6;
 
 .base-font {
   font-family: Poppins;
@@ -32,14 +35,24 @@ body {
   width: 20em;
 }
 
+.share {
+  background: @lightest-gray;
+}
+
+// utils
+input[type='text'], .button {
+  height: 2.618rem;
+  line-height: 2.618rem;
+  padding: 0 1rem;
+}
+
 input[type='text'] {
   .base-font;
+  font-size: 0.95em;
   display: block;
   width: 100%;
-  line-height: 1;
-  padding: 0.25rem 0.5rem;
   margin: 0.5rem 0 1.5rem;
-  border: 1px solid @lightest-gray;
+  border: 1px solid darken(@lightest-gray, 5%);
 
   &:focus {
     boder-color: darken(@yellow, 10%);
@@ -49,11 +62,9 @@ input[type='text'] {
 
 .button {
   .noselect;
-  border: 2px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   display: inline-block;
   background: @orange;
-  line-height: 1;
-  padding: 0.5rem 1rem;
   color: #fff;
   border-radius: @border-radius;
   cursor: pointer;
@@ -69,11 +80,46 @@ input[type='text'] {
 
   &.-primary {
     background: @blue;
+    &:hover {
+      background: lighten(@blue, 10%);
+    }
+
+    &:active {
+      background: darken(@blue, 10%);
+      top: 1px;
+    }
+  }
+
+  &.-grayed {
+    background: @gray;
+    &:hover {
+      background: lighten(@gray, 10%);
+    }
+
+    &:active {
+      background: darken(@gray, 10%);
+      top: 1px;
+    }
+  }
+
+  &.-disabled {
+    background: @lightest-gray;
+    color: #888;
+    pointer-events: none;
+    cursor: default;
   }
 
   &.-big {
-    padding: 0.75rem 2rem;
+    height: 1.25 * 2.618rem;
+    line-height: 1.25 * 2.618rem;
+    padding: 0 1.8rem 0 1.5rem;
     font-size: 1.25em;
+  }
+
+  .fa {
+    margin-right: 0.5rem;
+    font-size: 0.8em;
+    top: -0.08em;
   }
 }
 
@@ -84,7 +130,7 @@ input[type='text'] {
 .capital-text {
   text-transform: uppercase;
   line-height: 1;
-  font-size: 0.75em;
+  font-size: 0.85em;
   font-weight: 400;
 }
 
@@ -108,5 +154,11 @@ input[type='text'] {
       font-size: 4vmin;
       padding-top: 0.25rem;
     }
+  }
+}
+
+.timer {
+  .capital-text {
+    padding-bottom: 0.5rem;
   }
 }

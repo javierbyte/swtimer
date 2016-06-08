@@ -6,7 +6,7 @@ var _ = require('lodash')
 
 var STORE = {}
 
-const TICK_SPEED = 500
+const TICK_SPEED = 128
 
 var PORT = process.env.PORT || 4007
 
@@ -42,7 +42,7 @@ io.on('connection', function(socket){
         active: 0,
         phase: 'PITCH',
         remainingTime: eventData.pitchTime * 1000,
-        running: true
+        running: false
       }
     })
 
@@ -68,7 +68,7 @@ io.on('connection', function(socket){
 });
 
 function dispatchEventUpdate(eventName) {
-  io.to('EVENT_ROOM_' + eventName).emit('EVENT_UPDATE', STORE[eventName])
+  io.to('EVENT_ROOM_' + eventName).volatile.emit('EVENT_UPDATE', STORE[eventName])
 }
 
 setInterval(function() {

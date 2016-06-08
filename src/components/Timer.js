@@ -2,7 +2,6 @@ const React = require('react')
 
 var DoughnutChart = require('react-chartjs').Doughnut;
 
-
 const Timer = React.createClass({
   propTypes: {
     value: React.PropTypes.object
@@ -17,6 +16,7 @@ const Timer = React.createClass({
 
     const activeTeamIdx = event.status.active
     const activeTeam = event.teams[activeTeamIdx]
+    const activeTeamName = activeTeam ? activeTeam.name : 'DONE!'
 
     var chartData = [{
       value: totalTime - remainingTime,
@@ -41,34 +41,37 @@ const Timer = React.createClass({
       showTooltips: false
     }
 
-    return <div>
+    return <div className='timer'>
       <div className='padding-bottom-1'>
-        <div className='capital-text'>Active team - {phase}</div>
-        <h3>{activeTeam.name}</h3>
+        {activeTeam ? <div className='capital-text'>Active team - {phase}</div> : <div className='capital-text'>-</div>}
+        <h3>{activeTeamName}</h3>
       </div>
 
       <div className='chart'>
-        <DoughnutChart data={phase === 'PITCH' ? chartData : chartDataQA} options={chartOptions} />
-        <div className='chart-content'>
-          <div className='chart-content-title'>
-            {remainingTime > 60000 ? Math.floor(remainingTime / 60000) + 'm ' : ''}
-            {Math.floor((remainingTime % 60000) / 1000) + 's'}
+        <DoughnutChart
+          key={phase + activeTeamName}
+          data={phase === 'PITCH' ? chartData : chartDataQA}
+          options={chartOptions} />
+
+        {activeTeam ? (
+          <div className='chart-content'>
+            <div className='chart-content-title'>
+              {remainingTime > 60000 ? Math.floor(remainingTime / 60000) + 'm ' : ''}
+              {Math.floor((remainingTime % 60000) / 1000) + 's'}
+            </div>
+            <div>
+              {phase}
+            </div>
           </div>
-          <div>
-            {phase}
+        ) : (
+          <div className='chart-content'>
+            <div className='chart-content-title'>
+              -
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      <div className='padding-1'>
-        remainingTime: {remainingTime} / {totalTime}
-      </div>
-      <div className='padding-1'>
-        phase: {phase}
-      </div>
-      <div className='padding-1'>
-        running: {event.running ? 'TRUE' : 'FALSE'}
-      </div>
     </div>
   }
 });

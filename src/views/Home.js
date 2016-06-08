@@ -8,9 +8,9 @@ const socket = io(`http://${document.location.hostname}:4007`)
 const Home = React.createClass({
   getInitialState() {
     return {
-      pitchTime: 360,
-      qaTime: 180,
-      eventName: '3',
+      pitchTime: 10,
+      qaTime: 5,
+      eventName: 'SW Fintech',
       teams: [{
         name: 'EBC'
       }, {
@@ -46,16 +46,18 @@ const Home = React.createClass({
 
     return (
       <div className='swtimer padding-1'>
-        <div className='padding-1 txt-center'>
-          <h1>Home</h1>
+        <div className='padding-2 txt-center'>
+          <h2>SW Timer</h2>
         </div>
 
         <div className='flex'>
-          <div className='padding-1 flex-1'>
+          <div className='padding-2 flex-1'>
             <TeamList value={teams} onChange={this.onChangeTeams} />
           </div>
 
-          <div className='sidebar padding-1'>
+          <div className='sidebar padding-2'>
+            <h4 className='padding-bottom-1'>Event Config</h4>
+
             <div className='capital-text'>
               Pitch time (in minutes)
             </div>
@@ -77,7 +79,7 @@ const Home = React.createClass({
           </div>
         </div>
 
-        <div className='padding-1 flex flex-align-center'>
+        <div className='padding-2 flex flex-align-center'>
           <div className='padding-right-1'>
             Event name
           </div>

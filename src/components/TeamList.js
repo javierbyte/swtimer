@@ -49,12 +49,18 @@ const TeamList = React.createClass({
                 className='no-margin flex-1'
                 onChange={this.onChange.bind(null, teamIdx, 'name')} />
 
-            <a className='button margin-left-1' onClick={this.onDelete.bind(null, teamIdx)}>Delete</a>
+            <a className='button margin-left-1' onClick={this.onDelete.bind(null, teamIdx)}>
+              <i className='fa fa-minus' />
+              Delete
+            </a>
           </div>
         })}
 
         <div className='margin-top-1'>
-          <a className='button' onClick={this.onNewTeam}>Add more</a>
+          <a className='button -primary' onClick={this.onNewTeam}>
+            <i className='fa fa-plus' />
+            Add more
+          </a>
         </div>
       </div>
     )

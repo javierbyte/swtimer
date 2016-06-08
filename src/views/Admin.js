@@ -5,6 +5,7 @@ const _ = require('lodash')
 const socket = io(`http://${document.location.hostname}:4007`)
 
 const Timer = require('../components/Timer')
+const TeamListDisplay = require('../components/TeamListDisplay')
 
 const Admin = React.createClass({
   getInitialState() {
@@ -48,6 +49,16 @@ const Admin = React.createClass({
     })
   },
 
+  onReturnHandle() {
+    const {event} = this.state
+
+    if (event.status.remainingTime % 1000 === 0) {
+      this.onReturn()
+    } else {
+      this.onRestart()
+    }
+  },
+
   onRestart() {
     const {event} = this.state
 
@@ -59,10 +70,70 @@ const Admin = React.createClass({
     })
   },
 
+  onReturn() {
+    const {event} = this.state
+    var phase = event.status.phase
+
+    if (event.status.active <= -1) {
+      // we have finished! let's return!
+      this._sendUpdate({
+        status: {
+          remainingTime: event.qaTime * 1000,
+          running: false,
+          phase: 'QA',
+          active: event.teams.length - 1
+        }
+      })
+      return
+    }
+
+    if (phase === 'QA') {
+      // we are in QA, lets return to pitch
+      phase = 'PITCH'
+      this._sendUpdate({
+        status: {
+          remainingTime: event.pitchTime * 1000,
+          running: false,
+          phase: phase
+        }
+      })
+    } else {
+      // we are in PITCH, let's return to the QA of the previous team
+      phase = 'QA'
+      this._sendUpdate({
+        status: {
+          remainingTime: event.qaTime * 1000,
+          running: false,
+          phase: phase,
+          active: event.status.active - 1
+        }
+      })
+    }
+  },
+
   onPause() {
     this._sendUpdate({
       status: {
         running: false
+      }
+    })
+  },
+
+  onPostpone() {
+    const {event} = this.state
+    const activeTeamIdx = event.status.active
+
+    const activeArray =  event.teams.splice(activeTeamIdx, 1)
+
+    this._sendUpdate({
+      teams: [
+        ...event.teams,
+        ...activeArray
+      ],
+      status: {
+        remainingTime: event.pitchTime * 1000,
+        running: false,
+        phase: 'PITCH'
       }
     })
   },
@@ -87,52 +158,67 @@ const Admin = React.createClass({
       </div>
     }
 
-    const activeTeamIdx = event.status.active
+    const activeTeamIdx = Math.max(event.status.active, -1)
     const activeTeam = event.teams[activeTeamIdx] || {}
 
     const publicUrl = document.URL.replace('admin', 'event').split('?token')[0]
 
+    const canReturn = activeTeamIdx !== 0 || event.status.phase !== 'PITCH'
+
     return (
       <div className='swtimer padding-1'>
-        <div className='padding-1 txt-center'>
+        <div className='padding-2 txt-center'>
           <h3>{event.eventName}</h3>
           <div className='capital-text'>Pitch time</div>
         </div>
 
         <div className='flex'>
-          <div className='padding-1 flex-1 team-list'>
-            <div className='padding-1'>
+          <div className='flex-1 team-list'>
+            <div className='padding-2'>
               <Timer value={event} />
             </div>
-
-            <div className='padding-1'>
-              {event.status.running ? (
-                <a className='button -primary' onClick={this.onPause}>Pause</a>
-              ) : (
-                <a className='button -primary' onClick={this.onStart}>Start</a>
-              )}
-              {' '}
-              <a className='button -primary' onClick={this.onRestart}>Restart this phase</a>
-            </div>
-
-            {_.map(event.teams, (team, teamIdx) => {
-              return <div key={teamIdx} className={`team-element ${teamIdx === activeTeamIdx ? '-active' : ''}`}>
-                {team.name}
-              </div>
-            })}
           </div>
 
-          <div className='sidebar padding-1'>
-            <div className='capital-text'>
-              Share the <b>PUBLIC</b> Url, <a href={publicUrl} target='_blank'>[open]</a>
-            </div>
-            <input type='text' value={publicUrl} disabled />
-
-            <div className='capital-text'>
-              Share the <b>ADMIN</b> Url (Be careful!)
-            </div>
-            <input type='text' value={document.URL} disabled />
+          <div className='sidebar padding-2'>
+            <h3>Team List</h3>
+            <TeamListDisplay value={event} />
           </div>
+        </div>
+
+        <div className='padding-2 txt-center'>
+          {event.status.running ? (
+            <a className={`button -grayed ${activeTeamIdx === -1 ? '-disabled' : ''}`} onClick={this.onPause}>
+              <i className='fa fa-pause' />
+              Pause
+            </a>
+          ) : (
+            <a className={`button -primary ${activeTeamIdx === -1 ? '-disabled' : ''}`} onClick={this.onStart}>
+              <i className='fa fa-play' />
+              Start
+            </a>
+          )}
+          {' '}
+          <a className={`button -grayed ${canReturn ? '' : '-disabled'}`} onClick={this.onReturnHandle}>
+            <i className='fa fa-undo' />
+            Return phase
+          </a>
+          {' '}
+          <a className={`button -grayed ${activeTeamIdx === -1 ? '-disabled' : ''}`} onClick={this.onPostpone}>
+            <i className='fa fa-arrow-down' />
+            Postpone team
+          </a>
+        </div>
+
+        <div className='padding-2 share'>
+          <div className='capital-text'>
+            Share the <b>PUBLIC</b> Url, <a href={publicUrl} target='_blank'>[open]</a>
+          </div>
+          <input type='text' value={publicUrl} disabled />
+
+          <div className='capital-text'>
+            Share the <b>ADMIN</b> Url (Be careful!)
+          </div>
+          <input type='text' value={document.URL} disabled />
         </div>
       </div>
     );
