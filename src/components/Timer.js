@@ -1,6 +1,7 @@
 const React = require('react')
+const _ = require('lodash')
 
-var DoughnutChart = require('react-chartjs').Doughnut;
+var DoughnutChart = require('react-chartjs').Doughnut
 
 const Timer = React.createClass({
   propTypes: {
@@ -12,7 +13,7 @@ const Timer = React.createClass({
     const {status} = event
 
     const {remainingTime, phase} = status
-    const totalTime = phase === 'PITCH' ? event.pitchTime * 1000 : event.qaTime * 1000
+    const totalTime = phase === 'PITCH' ? event.pitchTime : event.qaTime
 
     const activeTeamIdx = event.status.active
     const activeTeam = event.teams[activeTeamIdx]
@@ -20,7 +21,7 @@ const Timer = React.createClass({
 
     var chartData = [{
       value: totalTime - remainingTime,
-      color:'#ECF0F1'
+      color: '#e0e0e0'
     }, {
       value: remainingTime,
       color: '#27AE60'
@@ -34,7 +35,7 @@ const Timer = React.createClass({
     var chartOptions = {
       percentageInnerCutout: 90,
       animateRotate: false,
-      segmentShowStroke : false,
+      segmentShowStroke: false,
       animationEasing: 'easeInOutQuart',
       animationSteps: 12,
       responsive: true,
@@ -43,12 +44,13 @@ const Timer = React.createClass({
 
     return <div className='timer'>
       <div className='padding-bottom-1'>
-        {activeTeam ? <div className='capital-text'>Active team - {phase}</div> : <div className='capital-text'>-</div>}
-        <h3>{activeTeamName}</h3>
+          {activeTeam ? <div className='capital-text'>{event.eventName} ({phase})</div> : <div className='capital-text'>-</div>}
+          <h3>{activeTeamName}</h3>
       </div>
 
       <div className='chart'>
         <DoughnutChart
+          className='chart-circle'
           key={phase + activeTeamName}
           data={phase === 'PITCH' ? chartData : chartDataQA}
           options={chartOptions} />

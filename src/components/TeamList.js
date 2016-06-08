@@ -1,4 +1,4 @@
-const React = require('react');
+const React = require('react')
 
 const _ = require('lodash')
 
@@ -8,7 +8,7 @@ const TeamList = React.createClass({
     onChange: React.PropTypes.func
   },
 
-  onChange(idx, property, value) {
+  onChange (idx, property, value) {
     const teams = this.props.value
 
     this.props.onChange(
@@ -16,7 +16,7 @@ const TeamList = React.createClass({
     )
   },
 
-  onNewTeam() {
+  onNewTeam () {
     const teams = this.props.value
 
     this.props.onChange([...teams, {
@@ -24,7 +24,7 @@ const TeamList = React.createClass({
     }])
   },
 
-  onDelete(idx) {
+  onDelete (idx) {
     const teams = this.props.value
 
     var newTeams = [
@@ -35,11 +35,11 @@ const TeamList = React.createClass({
     this.props.onChange(newTeams)
   },
 
-  render() {
+  render () {
     const teams = this.props.value
 
     return (
-      <div>
+      <div className='team-list'>
         <h3>Team List</h3>
         {_.map(teams, (team, teamIdx) => {
           return <div key={teamIdx} className='flex flex-align-center padding-top-1'>
@@ -49,9 +49,8 @@ const TeamList = React.createClass({
                 className='no-margin flex-1'
                 onChange={this.onChange.bind(null, teamIdx, 'name')} />
 
-            <a className='button margin-left-1' onClick={this.onDelete.bind(null, teamIdx)}>
+            <a className='button margin-left-1 -circle' onClick={this.onDelete.bind(null, teamIdx)}>
               <i className='fa fa-minus' />
-              Delete
             </a>
           </div>
         })}
@@ -65,6 +64,6 @@ const TeamList = React.createClass({
       </div>
     )
   }
-});
+})
 
-module.exports = TeamList;
+module.exports = TeamList

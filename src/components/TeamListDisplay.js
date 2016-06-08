@@ -19,7 +19,7 @@ const TeamListDisplay = React.createClass({
           const isActive = teamIdx === activeTeamIdx
 
           return <div key={teamIdx} className={`team-element ${isActive ? '-active' : ''}`}>
-            {team.name} {isActive && `(${event.status.phase})`}
+            {isActive && <i className='fa fa-play' />} {team.name} {isActive && `(${event.status.phase})`}
           </div>
         })}
       </div>

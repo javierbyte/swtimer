@@ -1,17 +1,18 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var app = require('express')()
+var http = require('http').Server(app)
+var io = require('socket.io')(http)
+var slug = require('slug')
 
 var _ = require('lodash')
 
 var STORE = {}
 
-const TICK_SPEED = 128
+var TICK_SPEED = 334
 
 var PORT = process.env.PORT || 4007
 
-io.on('connection', function(socket){
-  socket.on('REQUEST_EVENT', function(eventName, callback) {
+io.on('connection', function (socket) {
+  socket.on('REQUEST_EVENT', function (eventName, callback) {
     console.log('\nREQUEST_EVENT', eventName, 'EVENT_ROOM_' + eventName)
 
     socket.join('EVENT_ROOM_' + eventName)
@@ -20,42 +21,55 @@ io.on('connection', function(socket){
       callback(null, STORE[eventName])
     } else {
       console.log('\nERR NO SUCH EVENT', {
-        req: {eventName},
+        req: {
+          eventName
+        },
         STORE
       })
       callback({ERR: 'No such event'}, null)
     }
   })
 
-  socket.on('POST_EVENT', function(eventData, callback) {
+  socket.on('POST_EVENT', function (eventData, callback) {
     console.log('\nPOST_EVENT', eventData.eventName)
 
-    var eventName = eventData.eventName
-
+    var eventName = slug(eventData.eventName)
     while (STORE[eventName]) {
-      eventName = eventName + '(1)'
+      eventName = slug(eventName + '-1')
     }
     eventData.eventName = eventName
 
+    eventData.teams = _.filter(eventData.teams, team => {
+      return team.name.length
+    })
+
+    var token = '' + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER) + '' + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
+
     STORE[eventName] = _.assign({}, eventData, {
+      pitchTime: parseInt(eventData.pitchTime * 60 * 1000, 10) || 5 * 60 * 1000,
+      qaTime: parseInt(eventData.qaTime * 60 * 1000, 10) || 3 * 60 * 1000,
       status: {
         active: 0,
         phase: 'PITCH',
-        remainingTime: eventData.pitchTime * 1000,
+        remainingTime: parseInt(eventData.pitchTime * 60 * 1000, 10) || 5 * 60 * 1000,
         running: false
-      }
+      },
+      _token: token
     })
 
     callback(null, {
       key: eventName,
-      token: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
+      token: token
     })
   })
 
-  socket.on('UPDATE_EVENT', function(eventData, callback) {
-    console.log('\nUPDATE_EVENT', eventData.eventName, 'EVENT_ROOM_' + eventData.eventName)
+  socket.on('UPDATE_EVENT', function (eventData, callback) {
+    console.log('\nUPDATE_EVENT', eventData)
 
-    STORE[eventData.eventName]
+    if (!STORE[eventData.eventName] || ('' + STORE[eventData.eventName]._token !== '' + eventData.token)) {
+      console.log('\nINVALID TOKEN')
+      return
+    }
 
     _.merge(STORE, {
       [eventData.eventName]: eventData.data
@@ -63,33 +77,32 @@ io.on('connection', function(socket){
 
     dispatchEventUpdate(eventData.eventName)
   })
+})
 
-
-});
-
-function dispatchEventUpdate(eventName) {
-  io.to('EVENT_ROOM_' + eventName).volatile.emit('EVENT_UPDATE', STORE[eventName])
+function dispatchEventUpdate (eventName) {
+  console.warn('\nDISPATCHING', eventName)
+  io.to('EVENT_ROOM_' + eventName).volatile.emit('EVENT_UPDATE', _.omit(STORE[eventName], '_token'))
 }
 
-setInterval(function() {
+setInterval(function () {
   _.forEach(STORE, event => {
     var eventStatus = event.status
 
-    if (eventStatus.running === true)  {
+    if (eventStatus.running === true) {
       // the event is running!
 
       eventStatus.remainingTime = eventStatus.remainingTime - TICK_SPEED
 
-      if (eventStatus.remainingTime < 0)
+      if (eventStatus.remainingTime < 0) {
         // we finished a phase!
 
         if (eventStatus.phase === 'PITCH') {
           // we finished PITCH!
-          eventStatus.remainingTime = event.qaTime * 1000
+          eventStatus.remainingTime = event.qaTime
           eventStatus.phase = 'QA'
         } else {
           // we finish WA
-          eventStatus.remainingTime = event.pitchTime * 1000
+          eventStatus.remainingTime = event.pitchTime
           eventStatus.phase = 'PITCH'
           eventStatus.active += 1
         }
@@ -99,13 +112,12 @@ setInterval(function() {
           eventStatus.active = -1
           eventStatus.running = false
         }
-
+      }
       dispatchEventUpdate(event.eventName)
     }
   })
 }, TICK_SPEED)
 
-
-http.listen(PORT, function(){
-  console.log('listening on *:' + PORT);
-});
+http.listen(PORT, function () {
+  console.log('listening on *:' + PORT)
+})

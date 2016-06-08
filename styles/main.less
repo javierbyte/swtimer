@@ -23,12 +23,55 @@ h1, h2, h3 {
 
 body {
   .base-font;
+  min-height: 100vh;
 }
 
 .swtimer {
-  padding: 10vmin 5vmin;
+  padding: 5vmin;
   max-width: 980px;
   margin: 0 auto;
+}
+
+.header {
+  background: #fff;
+  box-shadow: rgba(0,0,0,.05) 0 1px 0, rgba(0,0,0,.05) 0 2px 16px;
+}
+
+.logo {
+  height: 4em;
+}
+
+.footer {
+  text-align: center;
+  font-size: 0.9em;
+  opacity: .8;
+
+  a {
+    display: inline-block;
+  }
+}
+
+.team-list {
+  min-width: 20em;
+}
+
+body {
+  background-color: @lightest-gray;
+
+  &::before {
+    display: block;
+    content: '';
+    background-image: url(/public/sw-peeps.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 66vmin;
+    width: 66vmin;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    opacity: 0.05;
+  }
 }
 
 .sidebar {
@@ -36,10 +79,10 @@ body {
 }
 
 .share {
-  background: @lightest-gray;
 }
 
 // utils
+
 input[type='text'], .button {
   height: 2.618rem;
   line-height: 2.618rem;
@@ -52,7 +95,7 @@ input[type='text'] {
   display: block;
   width: 100%;
   margin: 0.5rem 0 1.5rem;
-  border: 1px solid darken(@lightest-gray, 5%);
+  border: 1px solid darken(@lightest-gray, 8%);
 
   &:focus {
     boder-color: darken(@yellow, 10%);
@@ -121,10 +164,38 @@ input[type='text'] {
     font-size: 0.8em;
     top: -0.08em;
   }
+
+  &.-circle {
+    @size: 1.8em;
+    padding: 0;
+    border-radius: @size;
+    width: @size;
+    height: @size;
+    line-height: @size;
+    text-align: center;
+    .fa {
+      height: @size;
+      width: @size;
+      line-height: @size;
+      text-align: center;
+      margin: 0;
+    }
+    text-align: center;
+  }
 }
 
 .txt-center {
   text-align: center;
+}
+.txt-right {
+  text-align: right;
+}
+
+.flex {
+  flex-wrap: wrap
+}
+.flex-1 {
+  min-width: 20em;
 }
 
 .capital-text {
@@ -142,6 +213,9 @@ input[type='text'] {
 
 .chart {
   line-height: 1;
+  max-width: 66vh;
+  display: block;
+  margin: 0 auto;
   &-content {
     position: absolute;
     top: 50%;

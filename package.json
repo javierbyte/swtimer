@@ -1,5 +1,5 @@
 {
-  "name": "DONTFORGETTOSETUPTHIS",
+  "name": "swtimer",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -10,12 +10,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "DONTFORGETTOSETUPTHIS"
+    "url": "https://github.com/javierbyte/swtimer"
   },
   "keywords": [],
   "author": "Javier Bórquez <hi@javier.xyz> (http://github.com/javierbyte)",
   "license": "CC0-1.0",
-  "homepage": "DONTFORGETTOSETUPTHIS",
+  "homepage": "http://javierbyte.com:3000/",
   "devDependencies": {
     "babel-core": "^6.6.5",
     "babel-loader": "^6.2.4",
