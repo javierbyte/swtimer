@@ -8,6 +8,7 @@ var _ = require('lodash')
 var STORE = {}
 
 var TICK_SPEED = 334
+var EXPIRE_TIME = 60 * 60 * 1000
 
 var PORT = process.env.PORT || 4007
 
@@ -54,7 +55,8 @@ io.on('connection', function (socket) {
         remainingTime: parseInt(eventData.pitchTime * 60 * 1000, 10) || 5 * 60 * 1000,
         running: false
       },
-      _token: token
+      _token: token,
+      _updatedAt: new Date().getTime()
     })
 
     callback(null, {
@@ -72,7 +74,7 @@ io.on('connection', function (socket) {
     }
 
     _.merge(STORE, {
-      [eventData.eventName]: eventData.data
+      [eventData.eventName]: _.merge(eventData.data, {_updatedAt: new Date().getTime()})
     })
 
     dispatchEventUpdate(eventData.eventName)
@@ -80,12 +82,17 @@ io.on('connection', function (socket) {
 })
 
 function dispatchEventUpdate (eventName) {
-  console.warn('\nDISPATCHING', eventName)
   io.to('EVENT_ROOM_' + eventName).volatile.emit('EVENT_UPDATE', _.omit(STORE[eventName], '_token'))
 }
 
 setInterval(function () {
-  _.forEach(STORE, event => {
+  _.forEach(STORE, (event, eventIdx) => {
+    if (new Date().getTime() - event._updatedAt > EXPIRE_TIME) {
+      console.log('\nEVENT EXPIRED', eventIdx)
+      delete STORE[eventIdx]
+      return
+    }
+
     var eventStatus = event.status
 
     if (eventStatus.running === true) {

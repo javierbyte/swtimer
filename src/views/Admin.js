@@ -50,7 +50,20 @@ const Admin = React.createClass({
   onReturnHandle () {
     const {event} = this.state
 
-    if (event.status.remainingTime % 1000 === 0) {
+    if (event.status.active <= -1) {
+      // we have finished! let's return!
+      this._sendUpdate({
+        status: {
+          remainingTime: event.qaTime,
+          running: false,
+          phase: 'QA',
+          active: event.teams.length - 1
+        }
+      })
+      return
+    }
+
+    if (event.status.remainingTime === event.pitchTime || event.status.remainingTime === event.qaTime) {
       this.onReturn()
     } else {
       this.onRestart()
@@ -71,19 +84,6 @@ const Admin = React.createClass({
   onReturn () {
     const {event} = this.state
     var phase = event.status.phase
-
-    if (event.status.active <= -1) {
-      // we have finished! let's return!
-      this._sendUpdate({
-        status: {
-          remainingTime: event.qaTime,
-          running: false,
-          phase: 'QA',
-          active: event.teams.length - 1
-        }
-      })
-      return
-    }
 
     if (phase === 'QA') {
       // we are in QA, lets return to pitch
