@@ -19,6 +19,10 @@ io.on('connection', function(socket){
     if (STORE[eventName]) {
       callback(null, STORE[eventName])
     } else {
+      console.log('ERR NO SUCH EVENT', {
+        req: {eventName},
+        STORE
+      })
       callback({ERR: 'No such event'}, null)
     }
   })
