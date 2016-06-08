@@ -3,7 +3,7 @@ const React = require('react')
 const TeamList = require('../components/TeamList')
 
 var io = require('socket.io-client')
-var socket = io('http://localhost:4007')
+const socket = io(`http://${document.location.hostname}:4007`)
 
 const Home = React.createClass({
   getInitialState() {
