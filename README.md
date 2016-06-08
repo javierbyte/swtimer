@@ -15,6 +15,9 @@ Yey ~ better docs coming soon. Try it online! http://javierbyte.com:3000/
 * And all the clientes are up to date! (and it's responsive).
 ![](/docs-assets/sync.png)
 
+# Roadmap.
+* Live chat.
+
 # Installation.
 
 For the client:
