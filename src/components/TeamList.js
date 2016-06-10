@@ -42,21 +42,21 @@ const TeamList = React.createClass({
       <div className='team-list'>
         <h3>Team List</h3>
         {_.map(teams, (team, teamIdx) => {
-          return <div key={teamIdx} className='flex flex-align-center padding-top-1'>
-              <input
-                type='text'
-                value={team.name}
-                className='no-margin flex-1'
-                onChange={this.onChange.bind(null, teamIdx, 'name')} />
+          return <div key={teamIdx} className='flex flex-align-center padding-top-1 -preserve-responsive'>
+            <input
+              type='text'
+              value={team.name}
+              className='no-margin flex-1'
+              onChange={this.onChange.bind(null, teamIdx, 'name')} />
 
-            <a className='button margin-left-1 -circle' onClick={this.onDelete.bind(null, teamIdx)}>
+            <a className='button margin-left-1 -circle -grayed -button-to-red' onClick={this.onDelete.bind(null, teamIdx)}>
               <i className='fa fa-minus' />
             </a>
           </div>
         })}
 
         <div className='margin-top-1'>
-          <a className='button -primary' onClick={this.onNewTeam}>
+          <a className='button' onClick={this.onNewTeam}>
             <i className='fa fa-plus' />
             Add more
           </a>

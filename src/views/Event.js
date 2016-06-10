@@ -8,6 +8,10 @@ const Timer = require('../components/Timer')
 const TeamListDisplay = require('../components/TeamListDisplay')
 
 const Event = React.createClass({
+  propTypes: {
+    history: React.PropTypes.object
+  },
+
   getInitialState () {
     return {
       event: null
@@ -18,7 +22,6 @@ const Event = React.createClass({
     const eventId = _.get(this.props, ['params', 'id'])
 
     socket.emit('REQUEST_EVENT', eventId, (err, res) => {
-      console.warn('\nREQUEST_EVENT', res)
       if (err) {
         this.props.history.push('/')
       }
@@ -29,17 +32,19 @@ const Event = React.createClass({
     })
 
     socket.on('EVENT_UPDATE', updatedEvent => {
+      if (eventId !== updatedEvent.eventName) return
+
       this.setState({
         event: updatedEvent
       })
     })
   },
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     socket.removeAllListeners('EVENT_UPDATE')
   },
 
-  render() {
+  render () {
     const {event} = this.state
 
     if (!event) {
@@ -47,8 +52,6 @@ const Event = React.createClass({
         ...Loading
       </div>
     }
-
-    const activeTeamIdx = event.status.active
 
     return (
       <div className='swtimer padding-1'>

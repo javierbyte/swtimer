@@ -8,6 +8,7 @@
 
 @blue: #3498DB;
 @dark-blue: #2980B9;
+@red: #E74C3C;
 
 @gray: #95A5A6;
 
@@ -51,10 +52,6 @@ body {
   }
 }
 
-.team-list {
-  min-width: 20em;
-}
-
 body {
   background-color: @lightest-gray;
 
@@ -79,6 +76,27 @@ body {
 }
 
 .share {
+}
+
+.event-list {
+  a {
+    font-size: 0.9em;
+    color: @dark-blue;
+    &:not(:first-of-type) {
+      margin-left: 1rem;
+    }
+
+    &:hover {
+      text-decoration: underline;
+      color: #000;
+    }
+  }
+
+  .fa {
+    margin-right: 0.33rem;
+    font-size: 0.7em;
+    top: -0.05em;
+  }
 }
 
 // utils
@@ -145,6 +163,12 @@ input[type='text'] {
     }
   }
 
+  &.-button-to-red {
+    &:hover {
+      background: @red;
+    }
+  }
+
   &.-disabled {
     background: @lightest-gray;
     color: #888;
@@ -194,9 +218,6 @@ input[type='text'] {
 .flex {
   flex-wrap: wrap
 }
-.flex-1 {
-  min-width: 20em;
-}
 
 .capital-text {
   text-transform: uppercase;
@@ -234,5 +255,15 @@ input[type='text'] {
 .timer {
   .capital-text {
     padding-bottom: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 720px) {
+  .flex:not(.-preserve-responsive) {
+    display: block;
+
+    > div {
+      display: block;
+    }
   }
 }

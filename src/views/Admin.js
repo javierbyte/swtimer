@@ -8,6 +8,10 @@ const Timer = require('../components/Timer')
 const TeamListDisplay = require('../components/TeamListDisplay')
 
 const Admin = React.createClass({
+  propTypes: {
+    history: React.PropTypes.object
+  },
+
   getInitialState () {
     return {
       event: null
@@ -29,6 +33,7 @@ const Admin = React.createClass({
     })
 
     socket.on('EVENT_UPDATE', updatedEvent => {
+      if (eventId !== updatedEvent.eventName) return
       this.setState({
         event: updatedEvent
       })

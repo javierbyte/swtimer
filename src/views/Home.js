@@ -1,13 +1,22 @@
 const React = require('react')
+const _ = require('lodash')
+const io = require('socket.io-client')
+
+const {Link} = require('react-router')
+
+const socket = io(`http://${document.location.hostname}:4007`)
 
 const TeamList = require('../components/TeamList')
 
-var io = require('socket.io-client')
-const socket = io(`http://${document.location.hostname}:4007`)
-
 const Home = React.createClass({
+  propTypes: {
+    history: React.PropTypes.object
+  },
+
   getInitialState () {
     return {
+      eventList: [],
+
       pitchTime: 5,
       qaTime: 3,
       eventName: 'Startupweekend',
@@ -23,6 +32,21 @@ const Home = React.createClass({
         name: 'GBM'
       }]
     }
+  },
+
+  componentDidMount () {
+    socket.emit('REQUEST_EVENT_LIST', (err, res) => {
+      if (err) return console.error(err)
+      this.setState({
+        eventList: res
+      })
+    })
+
+    socket.on('EVENT_LIST_UPDATE', eventList => {
+      this.setState({
+        eventList: eventList
+      })
+    })
   },
 
   onChangeTeams (newTeams) {
@@ -42,11 +66,30 @@ const Home = React.createClass({
     })
   },
 
+  componentWillUnmount () {
+    socket.removeAllListeners('EVENT_LIST_UPDATE')
+  },
+
   render () {
-    const {pitchTime, qaTime, teams, eventName} = this.state
+    const {pitchTime, qaTime, teams, eventName, eventList} = this.state
 
     return (
       <div className='swtimer padding-1'>
+        <div className='padding-2 flex flex-align-center'>
+          <h4 className='padding-right-1 no-margin'>
+            Event name
+          </h4>
+          <input
+            type='text'
+            placeholder="Don't forget to name your event!"
+            value={eventName}
+            className='no-margin flex-1' onChange={(evt) => {
+              this.setState({
+                eventName: evt.target.value
+              })
+            }}/>
+        </div>
+
         <div className='flex'>
           <div className='padding-2 flex-1'>
             <TeamList value={teams} onChange={this.onChangeTeams} />
@@ -72,27 +115,23 @@ const Home = React.createClass({
                 qaTime: evt.target.value
               })
             }} />
-
           </div>
         </div>
 
-        <div className='padding-2 flex flex-align-center'>
-          <div className='padding-right-1'>
-            Event name
-          </div>
-          <input
-            type='text'
-            placeholder="Don't forget to name your event!"
-            value={eventName}
-            className='no-margin flex-1' onChange={(evt) => {
-              this.setState({
-                eventName: evt.target.value
-              })
-            }}/>
-
-          <a className={`button -primary margin-left-1 ${eventName.length ? '' : '-disabled'}`} onClick={this.onCreate}>
-            Create!
+        <div className='padding-bottom-2 padding-left-2 padding-right-2 flex flex-justify-center'>
+          <a className={`button -primary -big margin-left-1 ${eventName.length ? '' : '-disabled'}`} onClick={this.onCreate}>
+            Create event!
           </a>
+        </div>
+
+        <div className='event-list txt-center'>
+          {eventList.length !== 0 && <div><b>Active events: </b></div>}
+          {_.map(eventList, event => {
+            return <Link to={`/event/${event.eventName}`} key={event.eventName}>
+              {event.status.running ? <i className='fa fa-play' /> : <i className='fa fa-pause' />}
+              {event.eventName}
+            </Link>
+          })}
         </div>
       </div>
     )
