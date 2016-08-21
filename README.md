@@ -1,6 +1,6 @@
 # SW Timer
 
-Yey ~ better docs coming soon. Try it online! http://javierbyte.com:3000/
+Yey ~ better docs coming soon.
 
 ## Features.
 * Easy creation and customization of new events:
